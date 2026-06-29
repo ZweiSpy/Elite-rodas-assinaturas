@@ -89,7 +89,19 @@ st.markdown(ELITE_CSS, unsafe_allow_html=True)
 os.makedirs(TEMP_DIR, exist_ok=True)
 db = DatabaseHandler()
 
-MODELOS_SCOOTER = ["Elite Pro X", "City Rider 500W", "Sport Max 1000W"]
+MODELOS_SCOOTER = [ "X13 Pro Max",
+    "X13 Pro",
+    "X16 Pro",
+    "X17",
+    "X18",
+    "Tank",
+    "Sport 701",
+    "Triciclo Big",
+    "X11",
+    "X13",
+    "X15",
+    "M16",
+    "DOT"]
 
 
 def obter_base_url() -> str:
