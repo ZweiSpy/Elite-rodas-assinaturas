@@ -8,6 +8,7 @@ import tempfile
 import uuid
 from datetime import datetime
 from typing import Dict, Optional
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 from supabase import Client, create_client
@@ -71,7 +72,9 @@ class DatabaseHandler:
             RuntimeError: Em falha de escrita no banco.
         """
         token = str(uuid.uuid4())
-        data_criacao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data_criacao = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         nome_arquivo_storage = f"{token}_original.pdf"
 
         try:
@@ -139,7 +142,9 @@ class DatabaseHandler:
         if contrato["status"] == "Assinado":
             raise ValueError("Este contrato já foi assinado.")
 
-        data_assinatura = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data_assinatura = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
         try:
             self.supabase.table("contratos").update({"status": "Assinado"}).eq(

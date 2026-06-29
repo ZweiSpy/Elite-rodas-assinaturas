@@ -6,6 +6,7 @@ Gerenciador de Assinaturas e Auditoria via Streamlit Community Cloud + Supabase.
 import os
 from datetime import datetime
 from typing import Dict, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 from PIL import Image
@@ -234,15 +235,25 @@ def tela_assinatura_cliente(token: str) -> None:
             imagem = Image.fromarray(img_array.astype("uint8"), "RGBA")
             imagem.save(caminho_assinatura)
 
-            ip_cliente = "192.168.1.100"
-            user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X)"
-            data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                headers = st.context.headers
+                ip_cliente = (
+                    headers.get("X-Forwarded-For", "IP Indisponível").split(",")[0].strip()
+                )
+                user_agent_cliente = headers.get("User-Agent", "Dispositivo Indisponível")
+            except AttributeError:
+                ip_cliente = "Erro de Captura"
+                user_agent_cliente = "Erro de Captura"
+
+            data_hora = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
             hash_documento = GeradorContrato.gerar_hash_arquivo(caminho_original)
 
             auditoria: Dict[str, str] = {
                 "data": data_hora,
                 "ip": ip_cliente,
-                "user_agent": user_agent,
+                "user_agent": user_agent_cliente,
                 "hash": hash_documento,
             }
 
@@ -260,7 +271,9 @@ def tela_assinatura_cliente(token: str) -> None:
             with open(pdf_gerado, "rb") as arquivo_final:
                 pdf_bytes_download = arquivo_final.read()
 
-            db.registrar_assinatura(token, ip_cliente, user_agent, hash_documento)
+            db.registrar_assinatura(
+                token, ip_cliente, user_agent_cliente, hash_documento
+            )
 
         except ValueError as exc:
             st.warning(str(exc))
