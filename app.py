@@ -14,77 +14,11 @@ from streamlit_drawable_canvas import st_canvas
 from database import TEMP_DIR, DatabaseHandler
 from gerador_pdf import GeradorContrato
 
-# ---------------------------------------------------------------------------
-# Configuração visual — paleta Elite Rodas (Preto, Vermelho #e60000, Branco, Cinza)
-# ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="Elite Rodas - Assinaturas",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
-
-ELITE_CSS = """
-<style>
-    .stApp {
-        background-color: #f5f5f5;
-    }
-    h1, h2, h3, h4 {
-        color: #e60000 !important;
-    }
-    .stButton > button {
-        background-color: #000000;
-        color: #ffffff;
-        border-radius: 5px;
-        border: 1px solid #000000;
-        width: 100%;
-        min-height: 48px;
-        font-weight: 600;
-    }
-    .stButton > button:hover {
-        background-color: #e60000;
-        border: 1px solid #000000;
-        color: #ffffff;
-    }
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > div {
-        border-color: #cccccc;
-    }
-    .signature-wrapper {
-        touch-action: none;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: auto;
-        max-width: 100%;
-        margin: 0 auto;
-    }
-    .signature-wrapper canvas {
-        max-width: 100% !important;
-        height: auto !important;
-        touch-action: none;
-        border: 2px solid #000000 !important;
-        border-radius: 4px;
-        display: block;
-        margin: 0 auto;
-    }
-    @media (max-width: 768px) {
-        .main .block-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .signature-wrapper {
-            position: relative;
-            z-index: 1;
-        }
-    }
-    div[data-testid="stForm"] {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1rem;
-        background-color: #ffffff;
-    }
-</style>
-"""
-
-st.markdown(ELITE_CSS, unsafe_allow_html=True)
 
 os.makedirs(TEMP_DIR, exist_ok=True)
 db = DatabaseHandler()
@@ -264,7 +198,6 @@ def tela_assinatura_cliente(token: str) -> None:
 
     largura, altura = obter_dimensoes_canvas()
 
-    st.markdown('<div class="signature-wrapper">', unsafe_allow_html=True)
     canvas_result = st_canvas(
         fill_color="rgba(255, 255, 255, 0)",
         stroke_width=3,
@@ -276,7 +209,6 @@ def tela_assinatura_cliente(token: str) -> None:
         display_toolbar=False,
         key=f"canvas_{token}",
     )
-    st.markdown("</div>", unsafe_allow_html=True)
 
     if st.button("Finalizar Assinatura", key=f"btn_finalizar_{token}"):
         if not canvas_tem_traco(canvas_result):
